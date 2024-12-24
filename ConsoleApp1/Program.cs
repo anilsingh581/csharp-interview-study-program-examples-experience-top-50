@@ -24,7 +24,7 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace CSharpConceptsConsoleApp
 {
-    #region Overloading Usage
+    #region Overloading methods Usage
     /*
         Yes, method overloading in C# allows you to define multiple methods with the same name but different parameter types, number of parameters, or both.
 
@@ -54,7 +54,8 @@ namespace CSharpConceptsConsoleApp
                 // Do something with 'a'
                 return a.Value;
             }
-            return 0;  // Return a default value if 'a' is null
+            // Return a default value if 'a' is null
+            return 0;  
         }
 
         // Method accepting string
