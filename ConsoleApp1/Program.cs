@@ -21,9 +21,11 @@ using System.Data.SqlClient;
 using System.Runtime.InteropServices;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.RegularExpressions;
 
 namespace CSharpConceptsConsoleApp
 {
+
     #region Overloading methods Usage
     /*
         Yes, method overloading in C# allows you to define multiple methods with the same name but different parameter types, number of parameters, or both.
@@ -44,6 +46,7 @@ namespace CSharpConceptsConsoleApp
         Return Type: In method overloading, the return type does not contribute to differentiating the methods. The method signatures must differ in the parameters.
         Nullable Types: int? is a nullable type, which means it can hold both an integer value and null. This makes it different from a non-nullable int, allowing overloading based on this difference.
      */
+    /*
     public class OverloadingExample
     {
         // Method accepting nullable int
@@ -68,7 +71,7 @@ namespace CSharpConceptsConsoleApp
             return $"You entered: {b}";
         }
     }
-
+    
     public class Program
     {
         public static void Main()
@@ -77,14 +80,22 @@ namespace CSharpConceptsConsoleApp
 
             // Calling Test with an int? (nullable int)
             int result1 = example.Test(10);      // Output: 10
+            Console.WriteLine("Test(10) : " + result1);
+
             int result2 = example.Test((int?)null);    // Output: 0
+            Console.WriteLine("Test((int?)null) : " + result2);
 
             // Calling Test with a string
             string result3 = example.Test("Hello");  // Output: "You entered: Hello"
+            Console.WriteLine("Test(\"Hello\") : " + result3);
+
             string result4 = example.Test("");      // Output: "Input is null or empty"
+            Console.WriteLine("Test(\"\") : " + result4);
+
+            Console.ReadLine();
         }
     }
-
+    */
     #endregion
 
     #region To find the duplicate records in an integer array in C# - int[] abc = { 1, 2, 3, 4, 5, 2, 1 };
@@ -105,7 +116,8 @@ namespace CSharpConceptsConsoleApp
             // Display duplicates
             Console.WriteLine("Duplicate records are: " + string.Join(", ", duplicates));
         }
-    }*/
+    }
+    */
     /*
     class duplicateRecords1
     {
@@ -149,7 +161,6 @@ namespace CSharpConceptsConsoleApp
         //This will help us auto generated Identity column 'Id' 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-
         public int CustomerId { get; set; }
         public string Name { get; set; }
     }
@@ -163,20 +174,21 @@ namespace CSharpConceptsConsoleApp
 
         public int OrderId { get; set; }
 
-       // [ForeignKey("Customer")]
+        [ForeignKey("Customer")]
         public int CustomerId { get; set; }
         //This is virtual Customer and Entity framwork will use to perform CRUD operation.
-        //public virtual Customer Customer { get; set; }
+        public virtual Customer Customer { get; set; }
 
         public string Product { get; set; }
     }
 
 
-
+  
     class Program
     {
         static void Main()
-        {
+        {           
+
             List<Customer> customers = new List<Customer>
                         {
                         new Customer { CustomerId = 1, Name = "John" },
@@ -193,13 +205,13 @@ namespace CSharpConceptsConsoleApp
 
 
             //LINQ Query for Left Join
-            var leftJoinQuery = from customer in customers
+            var leftJoinQuery = from cust in customers
                                 join order in orders
-                                on customer.CustomerId equals order.CustomerId into customerOrders
+                                on cust.CustomerId equals order.CustomerId into customerOrders
                                 from co in customerOrders.DefaultIfEmpty()  // Simulates a left join
                                 select new
                                 {
-                                    CustomerName = customer.Name,
+                                    CustomerName = cust.Name,
                                     Product = co?.Product ?? "No Order"  // Handle null when no matching order
                                 };
 
@@ -212,8 +224,8 @@ namespace CSharpConceptsConsoleApp
             //LINQ Query for Right Join
             //Here, we will swap the Customers and Orders collections and perform a left join:
             var rightJoinQuery = from order in orders
-                                 join customer in customers
-                                 on order.CustomerId equals customer.CustomerId into orderCustomers
+                                 join cust in customers
+                                 on order.CustomerId equals cust.CustomerId into orderCustomers
                                  from oc in orderCustomers.DefaultIfEmpty()  // Simulates a right join
                                  select new
                                  {
@@ -265,8 +277,8 @@ namespace CSharpConceptsConsoleApp
             //Result > Sorted array: 1, 2, 3, 5,   30, 12, 10, 7, 6
         }
     }
-
     */
+
 
     #endregion
 
@@ -370,10 +382,10 @@ namespace CSharpConceptsConsoleApp
     /*
      Explanation:
         Singleton Pattern:
-
             The CountryMasterCache class is a Singleton. This means only one instance of the class will be created, and it is accessed using the static Instance property.
             The private constructor prevents external instantiation.
             The Instance property ensures thread-safe access by using double-check locking.
+        
         Country Cache:
             The _countryCache field holds the list of countries.
             The LoadCountries() method is responsible for loading the country data (from a database, API, etc.). In this example, it is hardcoded for simplicity.
@@ -387,8 +399,96 @@ namespace CSharpConceptsConsoleApp
         This design ensures that the country data is cached in memory and only fetched once, improving performance while keeping the cache synchronized with the latest data when required.
 
      */
-    /*
+    /// <summary>
+    /// Singleton Example 1
+    /// </summary>
     
+
+    // Define the Country model
+    public class Country
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+
+    // Singleton class to manage and cache the list of countries
+    public sealed class CountryMaster
+    {
+        // Cached list of countries
+        private static List<Country> _countryCache;
+
+        // Private static instance of the class
+        private static readonly Lazy<CountryMaster> _instance = new Lazy<CountryMaster>(() => new CountryMaster());
+
+        // Private constructor to prevent direct instantiation
+        private CountryMaster()
+        {
+            // Initialize the cache
+            LoadCountries();
+        }
+
+        // Public static property to access the singleton instance
+        public static CountryMaster Instance => _instance.Value;
+
+        // Method to load countries into the cache
+        private void LoadCountries()
+        {
+            // Simulate loading data from a data source
+            _countryCache = new List<Country>
+            {
+                new Country { Id = 1, Name = "United States" },
+                new Country { Id = 2, Name = "Canada" },
+                new Country { Id = 3, Name = "Mexico" },
+                // Add more countries as needed
+            };
+            Console.WriteLine("Countries loaded into cache.");
+        }
+
+        // Public method to get all countries
+        public List<Country> GetCountries()
+        {
+            return _countryCache;
+        }
+
+        // Public method to refresh the cache
+        public void RefreshCountries()
+        {
+            LoadCountries();
+            Console.WriteLine("Country cache refreshed.");
+        }
+    }
+
+    // Usage example of the CountryMaster Singleton
+    class SingletonPattern
+    {
+        static void Main(string[] args)
+        {
+            // Access the Singleton instance and retrieve the cached countries
+            var countryCache = CountryMaster.Instance;
+            var countries = countryCache.GetCountries();
+
+            // Display the countries
+            Console.WriteLine("Cached Countries:");
+            foreach (var country in countries)
+            {
+                Console.WriteLine($"Country ID: {country.Id}, Name: {country.Name}");
+            }
+
+            // Refresh the cache
+            countryCache.RefreshCountries();
+
+            // Display the countries again after refreshing
+            Console.WriteLine("\nAfter Refresh:");
+            foreach (var country in countryCache.GetCountries())
+            {
+                Console.WriteLine($"Country ID: {country.Id}, Name: {country.Name}");
+            }
+        }
+    }
+
+
+    /*
+     //* Example 2
     //Define the Country model
     public class Country
     {
@@ -490,8 +590,8 @@ namespace CSharpConceptsConsoleApp
             }
         }
     }
+    
     */
-
 
     #endregion
 
