@@ -402,90 +402,109 @@ namespace CSharpConceptsConsoleApp
     /// <summary>
     /// Singleton Example 1
     /// </summary>
-    
 
-    // Define the Country model
+    // Class representing a Country with ID, Name, and Description properties
+    /*
     public class Country
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
+        public int ID { get; set; } // Unique identifier for the country
+        public string Name { get; set; } // Name of the country
+        public string Description { get; set; } // Description of the country
     }
+    */
 
-    // Singleton class to manage and cache the list of countries
+    /*
+     * Singleton class for managing the Country list
+     Key Points:
+        Singleton Pattern: The CountryMaster class ensures only one instance is created using Lazy<T>.
+        Caching: The _countyCache stores the list of countries in memory to avoid frequent database calls.
+        Lazy Initialization: The Lazy<T> object ensures the instance is created only when accessed.
+        Refresh Mechanism: RefreshCountry simulates refreshing data from a database.
+        Encapsulation: The constructor is private to restrict direct instantiation of CountryMaster.
+     */
+
+    /*
     public sealed class CountryMaster
     {
-        // Cached list of countries
-        private static List<Country> _countryCache;
+        // Static cache to store the list of countries
+        private static List<Country> _countyCache;
 
-        // Private static instance of the class
-        private static readonly Lazy<CountryMaster> _instance = new Lazy<CountryMaster>(() => new CountryMaster());
-
-        // Private constructor to prevent direct instantiation
-        private CountryMaster()
-        {
-            // Initialize the cache
-            LoadCountries();
-        }
+        // Lazy initialization to ensure the singleton instance is created only when needed
+        private static readonly Lazy<CountryMaster> _instnace = new Lazy<CountryMaster>(() => new CountryMaster());
 
         // Public static property to access the singleton instance
-        public static CountryMaster Instance => _instance.Value;
+        public static readonly CountryMaster Instance = _instnace.Value;
 
-        // Method to load countries into the cache
+        // Private constructor to prevent instantiation from outside the class
+        private CountryMaster()
+        {
+            // Initialize the country list when the singleton instance is created
+            LoadCountries();
+        }
+
+        // Method to load the initial set of countries into the cache
         private void LoadCountries()
         {
-            // Simulate loading data from a data source
-            _countryCache = new List<Country>
+            _countyCache = new List<Country>()
             {
-                new Country { Id = 1, Name = "United States" },
-                new Country { Id = 2, Name = "Canada" },
-                new Country { Id = 3, Name = "Mexico" },
-                // Add more countries as needed
+                new Country { ID = 0, Name = "India" },
+                new Country { ID = 1, Name = "United States" },
+                new Country { ID = 2, Name = "UK" },
+                new Country { ID = 3, Name = "Mexico" }
             };
-            Console.WriteLine("Countries loaded into cache.");
         }
 
-        // Public method to get all countries
+        // Method to get the list of countries from the cache
         public List<Country> GetCountries()
         {
-            return _countryCache;
+            // If the cache is null, reload the initial set of countries
+            return _countyCache;
         }
 
-        // Public method to refresh the cache
-        public void RefreshCountries()
+        // Method to refresh the list of countries, simulating a database call
+        public List<Country> RefreshCountry()
         {
-            LoadCountries();
-            Console.WriteLine("Country cache refreshed.");
+            // Replace the cache with an updated list of countries
+            _countyCache = new List<Country>()
+            {
+                new Country { ID = 0, Name = "India" },
+                new Country { ID = 1, Name = "United States" },
+                new Country { ID = 2, Name = "UK" },
+                new Country { ID = 3, Name = "Mexico" },
+                // Add more countries as needed
+            };
+
+            return _countyCache; // Return the refreshed country list
         }
     }
 
-    // Usage example of the CountryMaster Singleton
-    class SingletonPattern
+    // Class to demonstrate the usage of the Singleton CountryMaster
+    public class Singlton
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            // Access the Singleton instance and retrieve the cached countries
-            var countryCache = CountryMaster.Instance;
-            var countries = countryCache.GetCountries();
-
-            // Display the countries
-            Console.WriteLine("Cached Countries:");
-            foreach (var country in countries)
+            // Get the initial list of countries from the singleton instance
+            var listOfCounty = CountryMaster.Instance.GetCountries();
+            Console.WriteLine($"GetCountries: ");
+            foreach (var country in listOfCounty)
             {
-                Console.WriteLine($"Country ID: {country.Id}, Name: {country.Name}");
+                // Print each country's ID and Name
+                Console.WriteLine($"Country ID:  {country.ID}");
+                Console.WriteLine($"Country Name:  {country.Name}");
             }
 
-            // Refresh the cache
-            countryCache.RefreshCountries();
-
-            // Display the countries again after refreshing
-            Console.WriteLine("\nAfter Refresh:");
-            foreach (var country in countryCache.GetCountries())
+            // Refresh the country list and fetch the updated list
+            var refreshListOfCounty = CountryMaster.Instance.RefreshCountry();
+            Console.WriteLine($"RefreshCountry: ");
+            foreach (var country in refreshListOfCounty)
             {
-                Console.WriteLine($"Country ID: {country.Id}, Name: {country.Name}");
+                // Print each country's ID and Name from the refreshed list
+                Console.WriteLine($"Country ID:  {country.ID}");
+                Console.WriteLine($"Country Name:  {country.Name}");
             }
         }
     }
-
+    */
 
     /*
      //* Example 2
@@ -647,12 +666,12 @@ namespace CSharpConceptsConsoleApp
     //Example 1: Using IEnumerable
     //Explanation: The query using IEnumerable is applied to the names list, which is an in-memory collection.
     //The Where method filters the names, but the actual filtering happens in memory.
-    /*
+    
     class IEnumerableClass
     {
         static void Main()
         {
-            List<string> names = new List<string> { "Alice", "Bob", "Charlie", "David", "Eve" };
+            List<string> names = new List<string> { "Anil", "Shiva", "Charlie", "David", "Eve" };
 
             // IEnumerable example (in-memory)
             IEnumerable<string> result = names.Where(name => name.StartsWith("A"));
@@ -664,7 +683,7 @@ namespace CSharpConceptsConsoleApp
             }
         }
     }
-    */
+    
 
     //Example 2: Using IQueryable
     //Explanation: The IQueryable query is constructed but not executed until it's enumerated (when the foreach loop runs).
@@ -682,7 +701,7 @@ namespace CSharpConceptsConsoleApp
         {
             using (var context = new MyDbContext())
             {
-                // IQueryable example (query executed on database)
+                // IQueryable example (query executed on database. It will use database memory)
                 IQueryable<Customer> query = context.Customers.Where(c => c.Name.StartsWith("A"));
 
                 // SQL query is executed here, fetching only the relevant data from the database
