@@ -381,6 +381,12 @@ namespace CSharpConceptsConsoleApp
 
     /*
      Explanation:
+
+     A class should have the following structure for the Singleton Design Pattern:
+        1.Should have a private or protected constructor. No public and parameterized constructors.
+        2.Should have a static property to return an instance of a class.
+        3.At least have one non-static public method for a singleton operation.
+
         Singleton Pattern:
             The CountryMasterCache class is a Singleton. This means only one instance of the class will be created, and it is accessed using the static Instance property.
             The private constructor prevents external instantiation.
@@ -638,13 +644,15 @@ namespace CSharpConceptsConsoleApp
         IQueryable: Only fetches data when necessary, and filters, ordering, and other operations are performed on the database, which results in more efficient queries for large datasets.
 
     Key Points in the Example:
+
     IEnumerable (In-Memory):
-        Works with in-memory collections (like List<T>).
+    =========================
+        Works with in-memory collections (like Array, List<T>).
         Query execution happens in-memory after all data is loaded.
         Good for small collections that are already in memory.
 
-
    IQueryable (Database Querying):
+    =============================
         Works with databases or external data sources (like DbSet<T> in Entity Framework).
         Query is deferred and translated to SQL (or another query language).
         Better for large datasets and optimizing performance by pushing filtering to the database.
@@ -666,7 +674,7 @@ namespace CSharpConceptsConsoleApp
     //Example 1: Using IEnumerable
     //Explanation: The query using IEnumerable is applied to the names list, which is an in-memory collection.
     //The Where method filters the names, but the actual filtering happens in memory.
-    
+
     class IEnumerableClass
     {
         static void Main()
@@ -683,7 +691,7 @@ namespace CSharpConceptsConsoleApp
             }
         }
     }
-    
+
 
     //Example 2: Using IQueryable
     //Explanation: The IQueryable query is constructed but not executed until it's enumerated (when the foreach loop runs).
@@ -771,10 +779,9 @@ namespace CSharpConceptsConsoleApp
 
     Example: Action<string> print = message => Console.WriteLine(message);// Action that takes a string and prints it
 
-
     Predicate: A delegate that represents a method that takes a single input parameter and returns a boolean value (bool).
     Predicate: A delegate that returns a bool.
-    Predicate is used when you need to check conditions or perform boolean tests.
+    Predicate is used when you need to check conditions or perform boolean tests and  Always returns bool (True/False).
 
     Signature: Predicate<T>
     T is the input parameter type.
@@ -782,14 +789,14 @@ namespace CSharpConceptsConsoleApp
 
     Example: Predicate<int> isEven = x => x % 2 == 0; // Predicate that checks if a number is even
 
-     */
+   */
 
 
     #endregion
 
     #region Unmanaged code in C# Examples
     /*
-         * Unmanaged resources are those which are not controlled by .NET CLR runtime like File handle, Connection objects,COM objects and so on.
+         * Unmanaged resources are those which are not controlled by .NET CLR runtime like File handle, Connection Objects, COM objects and so on.
          * Managed resources are those which are pure .NET objects and these objects are controlled by .NET CLR.
      */
 
