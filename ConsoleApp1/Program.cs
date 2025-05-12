@@ -3547,6 +3547,71 @@ namespace CSharpConceptsConsoleApp
     /// If we create a private constructor and a public constructor in the same class, it will allow to create intance out side of this class 
     /// </summary>
     /// 
+
+    /*
+        /// Singleton Pattern Example – CountryMaster
+        /// sealed class prevents inheritance.
+        /// Constructor is private so no other instance can be created.
+        /// static readonly ensures thread-safe, single instance.
+
+        public sealed class CountryMaster
+        {
+            // Private static instance
+            private static readonly CountryMaster _instance = new CountryMaster();
+
+            // Country list storage
+            private List<string> countries;
+
+            // Private constructor to prevent external instantiation
+            private CountryMaster()
+            {
+                countries = new List<string> { "India", "USA", "UK", "Canada" };
+            }
+
+            // Public static property to get the single instance
+            public static CountryMaster Instance
+            {
+                get
+                {
+                    return _instance;
+                }
+            }
+
+            public void AddCountry(string country)
+            {
+                if (!countries.Contains(country))
+                    countries.Add(country);
+            }
+
+            public void DisplayCountries()
+            {
+                Console.WriteLine("Country List:");
+                foreach (var c in countries)
+                {
+                    Console.WriteLine($"- {c}");
+                }
+            }
+        }
+
+     
+        class Program
+        {
+            static void Main()
+            {
+                // Get the singleton instance
+                CountryMaster cm1 = CountryMaster.Instance;
+                cm1.AddCountry("Germany");
+
+                CountryMaster cm2 = CountryMaster.Instance;
+                cm2.AddCountry("Australia");
+
+                // cm1 and cm2 are same instance
+                cm2.DisplayCountries();
+            }
+        }
+
+     */
+
     /*
     class SimpleConsuctors
     {
