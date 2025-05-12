@@ -3248,12 +3248,77 @@ namespace CSharpConceptsConsoleApp
     ///A class can implement any number of interfaces but a subclass can implement only one abstract class because c# not support multiple inheritance.
     ///An abstract class can have non-abstract Methods(concrete methods) while in the case of Interface, all the methods have to be abstract.
     ///An abstract class can declare or use any variables while an interface is not allowed to do so.
+    ///Abstract class: Can have variables, constructors, and method implementations.
+    ///Interface: Cannot have instance variables(fields). It can only have constants, properties, and method signatures(without implementation, unless using default interface methods in C# 8+).
     ///An abstract class can have a constructor declaration while an interface can not do so.
     ///An abstract Class is allowed to have all access modifiers for all of its member declarations while in the interface we can not declare any access modifier(including public) as all the members of the interface are implicitly public.
-
-
     //abstract
     #region abstract - multiple inheritence not support
+    /// Abstract Class Example (with variable)
+    /*
+        public abstract class Worker
+        {
+            protected string name = "Default Worker"; // ✅ Variable allowed
+
+            public abstract void Work();
+
+            public void ShowName()
+            {
+                Console.WriteLine($"Worker name: {name}");
+            }
+        }
+
+        public class Engineer : Worker
+        {
+            public Engineer(string name)
+            {
+                this.name = name; // Accessing inherited variable
+            }
+
+            public override void Work()
+            {
+                Console.WriteLine("Engineer is working on a project.");
+            }
+        }
+
+        class Program
+        {
+            static void Main()
+            {
+                Engineer eng = new Engineer("Alice");
+                eng.Work();
+                eng.ShowName(); // Output: Worker name: Alice
+            }
+        }
+
+     */
+
+    /// Interface Example(no variable)
+    /*
+        public interface IWorker
+        {
+            void Work();
+            // string name = "X"; ❌ Not allowed (instance variable)
+        }
+
+        public class Manager : IWorker
+        {
+            public void Work()
+            {
+                Console.WriteLine("Manager is working on planning.");
+            }
+        }
+
+        class Program
+        {
+            static void Main()
+            {
+                IWorker mgr = new Manager();
+                mgr.Work();
+            }
+        }     
+     */
+
     /*
     public class absClass : abstractEat
     {
@@ -3287,29 +3352,103 @@ namespace CSharpConceptsConsoleApp
     #endregion
 
     //interface
-    #region interface - multiple inheritence support - explicity and implecitly
+    #region interface - multiple inheritence support - Explicity (direct) and Implecitly
+
+    /// Interface Example with Implicit and Explicit Implementation: 
+    /// Implicit interface 
+    /// Explicit interface
     /*
-    public class interfaceCalss: IEat,ISleep
+
+    public interface IWorker
+    {
+        void Eat();
+        void Sleep();
+    }
+
+    // ✅ Implicit interface implementation
+    // Engineer: Implements the interface implicitly, so methods can be called directly on the instance.
+    public class Engineer : IWorker
+    {
+        public void Eat()
+        {
+            Console.WriteLine("Engineer eats lunch.");
+        }
+
+        public void Sleep()
+        {
+            Console.WriteLine("Engineer sleeps at night.");
+        }
+    }
+
+    // ✅ Explicit interface implementation
+    // Manager: Implements the interface explicitly, so you must cast to IWorker to access Eat() and Sleep(). 
+    public class Manager : IWorker
+    {
+        void IWorker.Eat()
+        {
+            Console.WriteLine("Manager eats quickly during meetings.");
+        }
+
+        void IWorker.Sleep()
+        {
+            Console.WriteLine("Manager sleeps very late.");
+        }
+
+        public void ManageTeam()
+        {
+            Console.WriteLine("Manager is managing the team.");
+        }
+    }
+
+    class Program
+    {
+        static void Main()
+        {
+            // Implicit implementation
+            Engineer eng = new Engineer();
+            eng.Eat();   // Engineer eats lunch.
+            eng.Sleep(); // Engineer sleeps at night.
+
+            // Explicit implementation - must use interface reference
+            IWorker mgr = new Manager();
+            mgr.Eat();   // Manager eats quickly during meetings.
+            mgr.Sleep(); // Manager sleeps very late.
+
+            // Manager-specific method
+            Manager m = new Manager();
+            m.ManageTeam(); // Manager is managing the team.
+            // m.Eat(); ❌ Not accessible directly due to explicit implementation
+        }
+    }
+
+
+     */
+
+    /// Explicity inheritence implementation
+    /*
+       public class Worker: IEat,ISleep
        {
            public  static void Main(string[] args)
            {
-
            }
 
-        void IEat.eact()
-        {
-            throw new NotImplementedException();
-        }
+            // That is called - explicity inheritence implementation
+            void IEat.eact()
+            {
+                throw new NotImplementedException();
+            }
 
-        void IEat.sleep()
-        {
-            throw new NotImplementedException();
-        }
+           // That is called - explicity inheritence implementation
+            void IEat.sleep()
+            {
+                throw new NotImplementedException();
+            }
 
-        void ISleep.sleep()
-        {
-            throw new NotImplementedException();
-        }
+            // That is called - explicity inheritence implementation
+            void ISleep.sleep()
+            {
+                throw new NotImplementedException();
+            }
     }
 
        public interface IEat{
@@ -3321,6 +3460,80 @@ namespace CSharpConceptsConsoleApp
           void sleep();
        }
     */
+
+    /// Explicit Inheritance Example
+    /// Here:  Engineer explicitly overrides the inherited methods to change their behavior.
+    /*
+        public class Worker
+        {
+            public virtual void Eat()
+            {
+                Console.WriteLine("Worker is eating.");
+            }
+
+            public virtual void Sleep()
+            {
+                Console.WriteLine("Worker is sleeping.");
+            }
+        }
+
+        public class Engineer : Worker
+        {
+            public override void Eat()
+            {
+                Console.WriteLine("Engineer is eating fast.");
+            }
+
+            public override void Sleep()
+            {
+                Console.WriteLine("Engineer is sleeping less.");
+            }
+        }
+
+        class Program
+        {
+            static void Main()
+            {
+                Worker worker = new Engineer();
+                worker.Eat();    // Output: Engineer is eating fast.
+                worker.Sleep();  // Output: Engineer is sleeping less.
+            }
+        }
+     
+     */
+    /// Implicit Inheritance Example
+    /// In this example, Engineer implicitly inherits the Eat() and Sleep() methods from Worker.
+    /*
+        public class Worker
+        {
+            public void Eat()
+            {
+                Console.WriteLine("Worker is eating.");
+            }
+
+            public void Sleep()
+            {
+                Console.WriteLine("Worker is sleeping.");
+            }
+         }
+
+        public class Engineer : Worker
+        {
+            // Inherits Eat() and Sleep() implicitly — no need to redefine
+        }
+
+        class Program
+        {
+            static void Main()
+            {
+                Engineer engineer = new Engineer();
+                engineer.Eat();    // Output: Worker is eating.
+                engineer.Sleep();  // Output: Worker is sleeping.
+            }
+        }     
+     */
+
+
     #endregion
 
     #endregion
