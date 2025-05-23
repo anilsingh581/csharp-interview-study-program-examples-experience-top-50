@@ -178,6 +178,27 @@ namespace ConsoleApp
             return sb.ToString().Remove(sb.Length - 1); ;
         }
 
+        //Fibonacci Series in C#  - Recursive Version
+        static int Fibonacci(int n)
+        {
+            if (n <= 1)
+                return n;
+            return Fibonacci(n - 1) + Fibonacci(n - 2);
+        }
+
+        static void Main()
+        {
+            Console.Write("Enter the number of terms: ");
+            int n = int.Parse(Console.ReadLine());
+
+            Console.WriteLine("Fibonacci Series:");
+            for (int i = 0; i < n; i++)
+            {
+                Console.Write(Fibonacci(i) + " ");
+            }
+        }
+        //End
+
         private static int Factorial(int number)
         {
             int fact = 1;
@@ -223,23 +244,27 @@ namespace ConsoleApp
 
         public static void FindDuplicateInstringArray()
         {
-            string[] strArray = { "Sunday", "Monday", "Tuesday", "Wednesday", "Sunday", "Monday" };
-            List<string> lstString = new List<string>();
-            StringBuilder sb = new StringBuilder();
+           #region  find duplicate strings in an array without using LINQ 
 
-            foreach (var str in strArray)
+            string[] input = { "Sunday", "Monday", "Tuesday", "Wednesday", "Sunday", "Monday" };
+            Dictionary<string, int> dic = new Dictionary<string, int>();
+
+            foreach (string c in input)
             {
-                if (lstString.Contains(str))
-                {
-                    sb.Append(" " + str);
-
-                }
+                if (dic.ContainsKey(c))
+                    dic[c] = dic[c] + 1;
                 else
-                {
-                    lstString.Add(str);
-                }
+                    dic[c] = 1;
             }
-            Console.WriteLine("Duplicate Found : {0}", sb.ToString());
+
+            Console.WriteLine("Duplicate items:");
+            foreach (var pair in dic)
+            {
+                if (pair.Value > 1)
+                    Console.WriteLine($"{pair.Key} appears {pair.Value} times");
+            }
+
+            #endregion
         }
 
         public static void RemoveDuplicate(string inputString)

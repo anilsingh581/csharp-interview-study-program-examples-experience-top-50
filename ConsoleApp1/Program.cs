@@ -675,6 +675,7 @@ namespace CSharpConceptsConsoleApp
     //Explanation: The query using IEnumerable is applied to the names list, which is an in-memory collection.
     //The Where method filters the names, but the actual filtering happens in memory.
 
+    /*
     class IEnumerableClass
     {
         static void Main()
@@ -691,7 +692,7 @@ namespace CSharpConceptsConsoleApp
             }
         }
     }
-
+    */
 
     //Example 2: Using IQueryable
     //Explanation: The IQueryable query is constructed but not executed until it's enumerated (when the foreach loop runs).
@@ -939,6 +940,163 @@ namespace CSharpConceptsConsoleApp
 
     #endregion
 
+    #region What is the actual base class of a controller?
+    /*
+      //The actual base class for a standard MVC controller is: System.Web.Mvc.Controller   
+
+      //In .NET, the ultimate base class of all classes is: System.Object
+
+     */
+    #endregion
+
+    #region  What is Thread Safety in C#? an Why?
+
+    //Thread safety means that a class or method can be safely used by multiple threads at the same time without causing data corruption, race conditions, or unexpected behavior.
+
+    // Thread safety = Safe to use from multiple threads simultaneously.
+    // Requires synchronization or immutable design.
+    // Without it, concurrent access can cause data corruption or unpredictable bugs.
+
+    //Prevent Thread safety using below 3 points: 
+    // 1. Use lock
+    // 2. Use collections from System.Collections.Concurrent like ConcurrentDictionary, ConcurrentQueue.
+    // 3. Use Immutable Objects - Create objects whose state cannot be changed after construction.
+
+
+    //Use lock or other synchronization primitives.
+    //Use thread-safe collections.
+    //Use atomic operations (Interlocked).
+    //Prefer immutable objects.
+    //Avoid sharing mutable state without protection.
+    //Asynchronous programming with async and await
+
+    //Why is thread safety important?
+    //In multithreaded programs(like those using Task, Thread, or async operations), multiple threads might access the same object simultaneously.If the object’s internal data is modified without proper synchronization, it can cause bugs that are very hard to reproduce.
+
+    //How to make a class thread-safe in C#?
+
+    //Example 1
+    //1. Use locking: Use lock statements to ensure only one thread accesses a critical section at a time.
+    /*
+     class ThreadSafeCounter
+        {
+            private int _count = 0;
+            private readonly object _lock = new();
+
+            public void Increment()
+            {
+                lock (_lock)
+                {
+                    _count++;
+                }
+            }
+
+            public int GetCount()
+            {
+                lock (_lock)
+                {
+                    return _count;
+                }
+            }
+        }
+     */
+
+    // Example 2:
+    // 2. Use thread-safe collections: Use collections from System.Collections.Concurrent like ConcurrentDictionary, ConcurrentQueue.
+    // Use collections from System.Collections.Concurrent to avoid manual locking.
+    /*
+        using System.Collections.Concurrent;
+        class Example
+        {
+            private ConcurrentDictionary<int, string> _dict = new ConcurrentDictionary<int, string>();
+
+            public void AddOrUpdate(int key, string value)
+            {
+                _dict.AddOrUpdate(key, value, (k, oldValue) => value);
+            }
+
+            public string GetValue(int key)
+            {
+                _dict.TryGetValue(key, out var value);
+                return value;
+            }
+        }  
+ 
+     
+     */
+
+    //Example 3
+    //3. Immutable Objects - Create objects whose state cannot be changed after construction.
+    // Since the state cannot be changed, it is inherently thread-safe.
+    /*
+        public class ImmutablePerson
+        {
+            public string Name { get; }
+            public int Age { get; }
+
+            public ImmutablePerson(string name, int age)
+            {
+                Name = name;
+                Age = age;
+            }
+
+            // No setters, so object is immutable
+        }
+     */
+
+
+
+    #endregion
+
+    #region What is Asynchronous Programming? - using Task - async and await
+    /*
+     What is Asynchronous Programming?
+        Allows your program to perform tasks without blocking the main thread.
+        Useful for I/O-bound operations like file access, network calls, or database queries.
+        Improves responsiveness and scalability.
+
+    async and await Keywords:
+        async marks a method as asynchronous.
+        await pauses the method execution until the awaited task completes, without blocking the thread.
+
+    Key points: 
+        1. async methods usually return:
+                1.1. Task (if no return value)
+                1.2. Task<T> (if returning a value of type T)
+                1.3  void only for event handlers (avoid otherwise)
+        2. Use await only inside async methods.
+        3. You can chain multiple awaits for sequential async calls.
+        4. Exceptions inside async methods propagate as usual but wrapped in the Task.
+     */
+    #endregion
+
+    #region In .NET, an Array is a reference type. 
+
+    /*  
+     Explanation:
+            Even if the array holds value types (like int, double, struct), the array itself is stored on the heap, and variables referring to it hold a reference (pointer) to the actual data.
+            So, when you assign an array variable to another, you are copying the reference, not the entire array data.
+     
+
+    //Example
+        int[] arr1 = new int[] { 1, 2, 3 };
+        int[] arr2 = arr1;  // arr2 references the same array as arr1
+
+        arr2[0] = 100;
+        Console.WriteLine(arr1[0]);  // Output: 100 (both refer to the same array)
+
+     */
+
+    #endregion
+
+    #region It will be work - ClassA:ClassB,ClassC or ClassA:InterfaceB,ClassC or ClassA:ClassC,InterfaceB  
+
+    //ClassA:ClassB,ClassC  - will not work bc not support multiple inheritance
+    //ClassA:InterfaceB,ClassC - it will not work. However, the correct order must be: ClassA : ClassC, InterfaceB
+    //Rule: In C#, always place the base class first, followed by interfaces.
+
+    #endregion
+
     #region  What is the difference between Task and Thread in C#?
     /// <summary>
     /// Both Threads and Task are used for Concurrent and Parallel programming. 
@@ -953,6 +1111,7 @@ namespace CSharpConceptsConsoleApp
     /// while Thread's code must be inside a try-catch block to handle exceptions and Unhandled exceptions in threads are not caught by the parent thread by default.
     /// Task can return a result. There is no direct mechanism to return the result from Thread.
     /// We can chain Tasks together to execute one after the other but not in the thread.
+    /// Task default retun type is Task
     /// </summary>
 
     //Example of Thread (a synchronous programing)
@@ -1137,6 +1296,38 @@ namespace CSharpConceptsConsoleApp
         }
     }
     */
+
+    #endregion
+
+    #region What is return type of Task?
+    /*
+     /// 1. Task (non-generic) - Used when you don’t return a result, just to represent an asynchronous operation.
+
+    public async Task DoSomethingAsync()
+    {
+        // Some async logic
+        await Task.Delay(1000);
+    }
+
+    //Return type: Task
+    //This is like returning void, but in an asynchronous context.
+
+   /// 2. Task<T> (generic) - Used when the method returns a result asynchronously.
+
+    public async Task<int> GetNumberAsync()
+    {
+        await Task.Delay(500);
+        return 42;
+    }
+    // Return type: Task<int>
+    // Think of it as int, but delivered asynchronously.
+
+     
+     When to use:
+            Use Task for fire-and-forget style async operations (but be cautious with exception handling).
+            Use Task<T> when you want to await and retrieve a result.
+            Avoid async void except in event handlers.
+     */
 
     #endregion
 
@@ -1662,6 +1853,31 @@ namespace CSharpConceptsConsoleApp
     /// </summary>
     /// 
     /*
+
+    //Example 1
+    class ReverseWordsProgram
+    {
+        static void Main()
+        {
+            string input = "The quick brown fox";
+            string result = ReverseWords(input);
+
+            Console.WriteLine("Original: " + input);
+            Console.WriteLine("Reversed: " + result);
+        }
+
+        static string ReverseWords(string sentence)
+        {
+            string[] words = sentence.Split(' ');
+            Array.Reverse(words);
+            return string.Join(" ", words);
+        }
+
+        // Splits the string into words: ["The", "quick", "brown", "fox"]
+        // Reverses the array: ["fox", "brown", "quick", "The"]
+    }
+
+    //Example 2
     class ReverseStringWord
     {
         static void Main(string[] args)
@@ -1678,7 +1894,36 @@ namespace CSharpConceptsConsoleApp
               Console.ReadLine();
         }
     }
+
+    
     */
+
+    #endregion
+
+    #region write a program to upercase to lowercase and lowercase touppper case in c# - AnIL
+    /*
+        class Program
+        {
+            static void Main()
+            {
+                string input = "AnIl";
+                string result = "";
+
+                foreach (char c in input)
+                {
+                    if (char.IsUpper(c))
+                        result = result + char.ToLower(c);
+                    else if (char.IsLower(c))
+                        result = result + char.ToUpper(c);
+                    else
+                        result = result + c; // Keep other characters as is
+                }
+
+                Console.WriteLine("Original String: " + input);
+                Console.WriteLine("Swapped Case: " + result);
+            }
+        }     
+     */
 
     #endregion
 
@@ -2454,6 +2699,7 @@ namespace CSharpConceptsConsoleApp
 
             //No-generic - Declaration of stack
             Stack stack = new Stack();
+
             stack.Push("Anil");
             stack.Push(10);
             stack.Push("Alok");
@@ -2952,11 +3198,15 @@ namespace CSharpConceptsConsoleApp
       {
           static void Main(string[] args)
           {
-              //Dog obj = new Dog();
-              //obj.
+              Dog obj = new Dog();
+          
               Console.Read();
           }
       }
+
+    //The output will be:
+    //    I am animal constructor.
+    //    I am dog constructor.
    */
     #endregion
 
