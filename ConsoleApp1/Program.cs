@@ -22,6 +22,7 @@ using System.Runtime.InteropServices;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
+using Microsoft.VisualBasic;
 
 namespace CSharpConceptsConsoleApp
 {
@@ -3785,6 +3786,289 @@ namespace CSharpConceptsConsoleApp
 
 
     #endregion
+
+    #endregion
+
+    #region What will be the output of this program?
+    /*
+    public class Program
+    {
+        public static void Main()
+        {
+            var result = GetData().Result;
+            Console.WriteLine(result);
+        }
+
+        public static async Task<string> GetData()
+        {
+            await Task.Delay(1000);
+            return "Done";
+        }
+    }
+    */
+    //The output of the given C# program will be: Done
+
+    //GetData() is an async method that:  Waits asynchronously for 1 second using await Task.Delay(1000). Then returns the string "Done".
+    //In Main(), the program calls GetData().Result. This blocks the main thread until the GetData() task completes and retrieves the result.
+
+
+
+    #endregion
+
+    #region What will be the output of this program?
+
+    /*
+     class A
+        {
+            public virtual void Show() => Console.WriteLine("A");
+        }
+ 
+        class B : A
+        {
+            public new void Show() => Console.WriteLine("B");
+        }
+ 
+        class Program
+        {
+            static void Main()
+            {
+                A a = new B();
+                a.Show();
+            }
+        }
+     */
+
+    //The output of the given program will be: A
+    //Here's what happens step by step:
+    //Class A: Has a virtual method Show() that prints "A".
+    //Class B: Declares a new method Show(), which hides the base class method, not overrides it.
+    //In Main(): 
+    // A a = new B(); // The variable 'a' is of type A, but refers to an instance of B
+    // a.Show();      // Calls A.Show(), because method hiding (not overriding) is used
+    //Because B.Show() is declared with new instead of override, it hides A.Show() rather than overriding it. So the method call is resolved based on the compile-time type of the variable (A), not the runtime type (B).
+
+
+    //If You Want Polymorphism:
+    //To get "B" as output (i.e., use dynamic dispatch), you should override the method in class B:
+    /*
+            class B : A
+            {
+                public override void Show() => Console.WriteLine("B");
+            }
+
+           //Then the output would be: B
+     */
+
+
+    #endregion
+
+    #region What will be the output of this program?
+
+    /*
+        IEnumerable<int> Gen()
+        {
+            yield return 1;
+            yield return 2;
+            yield return 3;
+        }
+ 
+        var e = Gen();
+        Console.WriteLine("Before");
+        foreach (var i in e)
+            Console.Write(i);
+        Console.WriteLine("After");    
+     */
+    //The output of the given C# program will be:
+    // Before
+    // 123
+    // After
+
+    //Explanation
+    //This method uses yield return, which creates a lazy iterator.
+    //When you call Gen(), it returns an IEnumerable<int>, but no code inside the method is executed until you start iterating over it.
+    //So, "Before" is printed first, then numbers 1 2 3 during iteration, and finally "After" at the end.
+
+
+    #endregion
+
+    #region What will be the output of this program?
+    /*
+        var list = new List<int> { 1, 2, 3 };
+
+        foreach (var item in list.Where(x => { list.Add(x + 10); return true; }))
+        {
+            Console.Write(item + " ");
+        }
+     */
+
+    // The given code will result in a runtime exception: InvalidOperationException: Collection was modified; enumeration operation may not execute.
+
+    //Explanation
+    // You're using list.Where(...), which deferredly filters the list.
+    // Inside the Where clause, you're modifying the list by adding items during enumeration (list.Add(x + 10)).
+    // This is not allowed: modifying a collection (adding or removing items) while it is being enumerated using foreach will throw an InvalidOperationException.
+
+    //Why This Happens:
+    //List<T>.Enumerator detects concurrent modification to avoid inconsistent behavior.
+    //The foreach loop starts iterating over the original list, but on the first iteration, list.Add(...) modifies the list.
+    //This triggers a runtime check, and.NET throws an exception to prevent unsafe enumeration
+
+    #endregion
+
+    #region Constructors - What will be the output of this program?
+
+    /*
+     class A
+    {
+        public A()
+        {
+            Console.WriteLine("Base class constructor A");
+        }
+    }
+
+    class B : A
+    {
+        public B()
+        {
+            Console.WriteLine("Derived class constructor B");
+        }
+    }
+
+    class Program
+    {
+        static void Main()
+        {
+            B obj = new B();
+        }
+    }
+
+     */
+
+    //Output
+    //Base class constructor A 
+    //Derived class constructor B
+
+    //Once  B obj = new A(); The code you posted will cause a compile-time error. A base class object is not a derived class, so this is not valid.
+    // Parant class can have child class
+    // It shoud be B obj = new B(); or A obj = new B();
+
+
+    //If Constructors are Overloaded
+    //If both classes have parameterized and default constructors, the appropriate base constructor is called first, then the derived one.
+
+    /*
+    class A
+    {
+        public A(string msg)
+        {
+            Console.WriteLine("Base A: " + msg);
+        }
+    }
+
+    class B : A
+    {
+        public B() : base("Hello from B to A")  // explicitly calling base class constructor
+        {
+            Console.WriteLine("Derived B");
+        }
+    }
+     */
+
+    //Output
+    // Base A: Hello from B to A
+    // Derived B
+
+
+
+    //🔷 Constructor Chaining in Same Class
+    //You can chain constructors within the same class using this(...):
+    /*
+       class MyClass
+        {
+            public MyClass() : this(10)
+            {
+                Console.WriteLine("Default constructor");
+            }
+
+            public MyClass(int x)
+            {
+                Console.WriteLine("Parameterized constructor: " + x);
+            }
+        }     
+     */
+
+    //Output
+    // Parameterized constructor: 10  
+    // Default constructor
+
+    #endregion
+
+    #region Destructor Execution Order - How many destructors are called?	
+    /*  Destructor is called automatically by the Garbage Collector (GC) when the object is no longer accessible.
+     *  You cannot call a destructor manually.
+     *  You cannot predict exactly when (or even if) the destructor will run — it's non-deterministic.
+     *  
+         * How many destructors are called? -  One per class in inheritance chain(if defined)
+         *  Order of execution - From derived to base class
+         *  When are they called? - When GC runs(non-deterministic)
+    */
+    /*
+        class A
+        {
+            ~A()
+            {
+                Console.WriteLine("Destructor A");
+            }
+        }
+
+        class B : A
+        {
+            ~B()
+            {
+                Console.WriteLine("Destructor B");
+            }
+        }
+
+        class C : B
+        {
+            ~C()
+            {
+                Console.WriteLine("Destructor C");
+            }
+        }
+
+        class Program
+        {
+            static void Main()
+            {
+                C obj = new C();
+            }
+        }     
+     */
+
+    // Output
+    // Destructor C  
+    // Destructor B
+    // Destructor A
+    //But ⚠️ only if the garbage collector decides to collect the object. You might not see anything unless you force GC:
+
+    // Forcing GC (not recommended in production):
+    /*
+        class Program
+        {
+            static void Main()
+            {
+                Create();
+                GC.Collect();      // Force garbage collection
+                GC.WaitForPendingFinalizers();
+            }
+
+            static void Create()
+            {
+                C obj = new C();
+            }
+        }     
+     */
 
     #endregion
 
