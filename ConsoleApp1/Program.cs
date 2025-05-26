@@ -23,6 +23,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using Microsoft.VisualBasic;
+using System.Net.NetworkInformation;
 
 namespace CSharpConceptsConsoleApp
 {
@@ -4068,6 +4069,570 @@ namespace CSharpConceptsConsoleApp
                 C obj = new C();
             }
         }     
+     */
+
+    #endregion
+
+    #region What will be the output of this program?
+    /*
+     public class A
+        {
+            public int i = 0;
+            internal virtual void test()
+            {
+                Console.WriteLine("A test");
+            }
+        }
+
+        public class B : A
+        {
+            public new int i = 1;
+            public new void test()
+            {
+                Console.WriteLine("B test");
+            }
+        }
+
+        public class C : B
+        {
+            public new int i = 2;
+            public new void test()
+            {
+                Console.WriteLine("C test");
+                (this as A).test();  // Cast to A and call test()
+            }
+        }
+
+     */
+
+    //Now suppose we execute this:
+    //C obj = new C();
+    //obj.test();
+    //Output: C test
+
+    //Explanation
+    //1. obj.test();
+    //C.test() is hiding the test() method from B and A (not overriding since no override is used). So the method called will be:  C test
+
+    //2. (this as A).test();
+    //We’re casting this to A, and then calling test().
+    //Even though test() in A is marked as virtual, it is not overridden in B or C — instead, they hide the method with new.
+    // So, when cast to A, the runtime dispatches to A.test()
+    //Final Output:
+    //C test
+    //A test
+
+    //Hiding (new) does not participate in polymorphism.
+    //Virtual dispatch occurs only if you override.
+
+
+    #endregion
+
+    #region Method Hiding vs Overriding - What will be the output of this program?
+    // Method Hiding vs Overriding
+    /*
+        class A
+        {
+            public virtual void Show() => Console.WriteLine("A");
+        }
+
+        class B : A
+        {
+            public new void Show() => Console.WriteLine("B");
+        }
+
+        class C : B
+        {
+            public override void Show() => Console.WriteLine("C");
+        }
+
+        class Program
+        {
+            static void Main()
+            {
+                A obj = new C();
+                obj.Show();
+            }
+        }
+     */
+
+    //❗ Compile-Time Error:
+    // C tries to override a method(Show) that was hidden(not marked virtual) in B
+
+    //Fix by changing B.Show() to:
+    ///public override void Show() => Console.WriteLine("B");
+    ///
+
+
+    /*
+     class A
+        {
+            public virtual void Show() => Console.WriteLine("A");
+        }
+
+        class B : A
+        {
+            public new void Show() => Console.WriteLine("B");
+        }
+
+        class C : B
+        {
+            public override void Show() => Console.WriteLine("C");
+        }
+
+        class Program
+        {
+            static void Main()
+            {
+                A a = new C();
+                a.Show();
+            }
+        }
+
+       // Output: C
+       // Because C overrides the virtual Show() defined in A.
+     */
+
+    #endregion
+
+    #region Boxing and Value Types - What will be the output of this program?
+
+    /*     
+        struct MyStruct
+        {
+            public int Value;
+        }
+
+        class Program
+        {
+            static void Main()
+            {
+                MyStruct s = new MyStruct { Value = 10 };
+                object o = s;
+                ((MyStruct)o).Value = 20;
+
+                Console.WriteLine(((MyStruct)o).Value);
+                Console.WriteLine(s.Value);
+            }
+        }
+
+       //Output
+       //10
+       //10
+       // Why? ((MyStruct)o).Value = 20; modifies a boxed copy, not the original s.
+
+     */
+
+    #endregion
+
+    #region Interface Method Conflict - What will be the output of this program?
+    /*
+     
+    interface IA { void Print(); }
+    interface IB { void Print(); }
+
+    class MyClass : IA, IB
+    {
+        void IA.Print() => Console.WriteLine("IA");
+        void IB.Print() => Console.WriteLine("IB");
+    }
+
+    class Program
+    {
+        static void Main()
+        {
+            MyClass obj = new MyClass();
+            ((IA)obj).Print();
+            ((IB)obj).Print();
+        }
+    }
+
+     */
+
+    //Output
+    // IA  
+    // IB
+
+    #endregion
+
+    #region Null with as Keyword - What will be the output of this program?
+    /*
+        class A { }
+        class B : A { }
+
+        class Program
+        {
+            static void Main()
+            {
+                B b = null;
+                A a = b;
+                Console.WriteLine(a == null ? "null" : "not null");
+            }
+        }
+
+        //Output
+        //not null
+
+        //Even though b is null, the casted reference a is still pointing to null in a typed variable, not "null" in C# sense.
+     */
+
+    #endregion
+
+    #region Readonly Fields Behavior - What will be the output of this program?
+
+    /*
+     class Test
+        {
+            public readonly int x;
+
+            public Test()
+            {
+                x = 10;
+            }
+
+            public void Change()
+            {
+                // x = 20;  // ❌ Compile-time error
+            }
+        }
+
+        //Output:  Compile-time Error
+        // Readonly fields can only be assigned in the constructor or inline.
+     */
+
+    #endregion
+
+    #region LINQ Execution Timing - What will be the output of this program?
+
+    /*
+     List<int> numbers = new List<int> { 1, 2, 3, 4 };
+        var query = numbers.Where(n => n > 2);
+
+        numbers.Add(5);
+
+        foreach (var num in query)
+        {
+            Console.WriteLine(num);
+        }
+
+      // Output
+      // 3,4,5
+      // Deferred Execution: The query is not executed until iterated.
+     */
+
+    #endregion
+
+    #region Async/Await and Synchronization - What will be the output of this program?
+    /*
+     async Task<int> GetNumberAsync()
+        {
+            await Task.Delay(100);
+            return 5;
+        }
+
+        async Task Main()
+        {
+            var result = GetNumberAsync();
+            Console.WriteLine(result.Result);
+        }
+     
+     //Output: 5
+     // Best practice: use await result; instead of .Result.
+     */
+
+    #endregion
+
+    #region ref vs out - What will be the output of this program?
+    /*
+     void RefMethod(ref int x)
+        {
+            x = x + 10;
+        }
+
+        void OutMethod(out int y)
+        {
+            y = 20;
+        }
+
+        int a = 5;
+        RefMethod(ref a);
+        Console.WriteLine(a);
+
+        OutMethod(out int b);
+        Console.WriteLine(b);
+
+       //Output
+       // 15
+       // 20
+       // ref requires variable to be initialized before passing, out doesn’t. So, results are - 15 and 20
+     
+     */
+
+
+    #endregion
+
+    #region Dictionary Key Behavior - What will be the output of this program?
+    /*
+        var dict = new Dictionary<string, int>();
+        dict["one"] = 1;
+        dict["ONE"] = 2;
+        Console.WriteLine(dict.Count);
+
+        //Output: 2
+        //Dictionary keys are case-sensitive by default. Use StringComparer.OrdinalIgnoreCase for case-insensitive behavior.    
+     */
+    #endregion
+
+    #region Threading & Shared Resource Without Lock - What will be the output of this program?
+    /*
+        int counter = 0;
+
+        void Increment()
+        {
+            for (int i = 0; i < 1000; i++)
+                counter++;
+        }
+
+        Thread t1 = new Thread(Increment);
+        Thread t2 = new Thread(Increment);
+        t1.Start();
+        t2.Start();
+        t1.Join();
+        t2.Join();
+
+        Console.WriteLine(counter);
+
+       // Output: Unpredictable, often < 2000
+       // Without lock, race condition occurs — multiple threads update counter unsafely.
+
+       //Locking for Thread-Safety
+
+        object _lock = new object();
+        int counter = 0;
+
+        void Increment()
+        {
+            for (int i = 0; i < 1000; i++)
+            {
+                lock (_lock)
+                {
+                    counter++;
+                }
+            }
+        }
+
+       //Output:
+       // Now counter will be safely incremented to 2000.
+     */
+
+
+    #endregion
+
+    #region Delegate Invocation List - What will be the output of this program?
+    /*     
+        delegate void Print();
+
+        void A() => Console.WriteLine("A");
+        void B() => Console.WriteLine("B");
+
+        Print p = A;
+        p += B;
+        p += A;
+
+        p();
+
+     */
+    //Output
+    // A  
+    // B
+    // A
+
+    // Multicast delegates call all subscribers in the order they were added.
+
+    #endregion
+
+    #region Events and Invocation - What will be the output of this program?
+    /*
+        class Publisher
+        {
+            public event Action OnNotify;
+
+            public void RaiseEvent()
+            {
+                OnNotify?.Invoke();
+            }
+        }
+
+        class Program
+        {
+            static void Main()
+            {
+                Publisher p = new Publisher();
+                p.OnNotify += () => Console.WriteLine("Event received");
+                p.RaiseEvent();
+            }
+        }
+
+         //Output: 
+         // Event received
+         
+        //✅ Events are like delegates but with restricted access — only the class declaring it can raise it.
+
+        //Event Without Subscriber
+        // Publisher p = new Publisher();
+        // p.RaiseEvent();
+
+        //Output: (no output) 
+        // Safe usage with OnNotify?.Invoke() avoids NullReferenceException.
+
+     */
+    #endregion
+
+    #region  Finalizer and Garbage Collection - What will be the output of this program?
+    /*
+        class MyClass
+        {
+            ~MyClass()
+            {
+                Console.WriteLine("Finalizer called");
+            }
+        }
+
+        class Program
+        {
+            static void Main()
+            {
+                MyClass obj = new MyClass();
+                obj = null;
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+            }
+        }
+
+     */
+    //Output:
+    // Finalizer called
+    // Finalizer (~MyClass) is executed after GC collects the object. GC.Collect() forces collection but should not be used in production unless necessary.
+
+    #endregion
+
+    #region   Real-World Scenario — Dispose Pattern
+    /*
+     class Resource : IDisposable
+        {
+            public void Dispose()
+            {
+                Console.WriteLine("Resource disposed");
+            }
+        }
+
+        class Program
+        {
+            static void Main()
+            {
+                using (Resource r = new Resource())
+                {
+                    Console.WriteLine("Using resource");
+                }
+            }
+        }
+     */
+
+    //Output:
+    //Using resource
+    //Resource disposed
+
+    //using ensures that Dispose() is called even if an exception occurs.
+
+    #endregion
+
+
+    #region  Real-World Scenario — Deadlock
+    /*
+        object lockA = new object();
+        object lockB = new object();
+
+        void Task1()
+        {
+            lock (lockA)
+            {
+                Thread.Sleep(100);
+                lock (lockB) { Console.WriteLine("Task1 acquired both locks"); }
+            }
+        }
+
+        void Task2()
+        {
+            lock (lockB)
+            {
+                Thread.Sleep(100);
+                lock (lockA) { Console.WriteLine("Task2 acquired both locks"); }
+            }
+        }
+
+        new Thread(Task1).Start();
+        new Thread(Task2).Start();
+
+     */
+    //Output:
+    //This can deadlock because:
+    //Task1 locks A then waits for B
+    //Task2 locks B then waits for A
+    #endregion
+
+
+    #region  TPL with Exception Handling
+    /*
+        try
+        {
+            await Task.WhenAll(
+                Task.Run(() => throw new Exception("Error1")),
+                Task.Run(() => throw new Exception("Error2"))
+            );
+        }
+        catch (AggregateException ex)
+        {
+            foreach (var e in ex.InnerExceptions)
+                Console.WriteLine(e.Message);
+        }
+     */
+
+    //Output
+    // Error1  
+    // Error2
+
+    #endregion
+
+    #region  Thread-Safe Logger Example -  (Singleton Pattern)
+    /// Design a logger that:
+    ///     Allows concurrent logging from multiple threads
+    ///     Ensures only one instance
+    ///     Avoids race conditions during file write
+    
+    ///This implementation:
+        //Uses Lazy Initialization to delay creation of the singleton object until needed.
+        //Is thread-safe both in initialization and during logging.
+        //Makes it easy to write to a log file from anywhere in the application via
+
+    /*
+        public sealed class Logger
+        {
+            private readonly string _logFilePath = "log.txt";       //The path where log entries will be saved. Set as readonly – can only be set in the constructor or declaration.
+            private static readonly object _lock = new object();    //Used to synchronize access to the log file when multiple threads call Log(...).
+            private static readonly Lazy<Logger> _instance = new Lazy<Logger>(() => new Logger());  //Lazy<Logger> ensures that the Logger instance is created only when it's first accessed.        
+            
+            private Logger() { } //Prevents external instantiation – required for a Singleton pattern.
+
+            public static Logger Instance => _instance.Value; //Exposes the single instance of Logger via a read-only property.
+
+            public void Log(string message)
+            {
+                lock (_lock) //Ensures that only one thread writes to the file at a time.
+                {
+                    File.AppendAllText(_logFilePath, $"{DateTime.Now}: {message}\n"); //Appends the log message with a timestamp to the log.txt file.
+                }
+            }
+        }
      */
 
     #endregion
