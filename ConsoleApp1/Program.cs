@@ -4546,7 +4546,6 @@ namespace CSharpConceptsConsoleApp
 
     #endregion
 
-
     #region  Real-World Scenario — Deadlock
     /*
         object lockA = new object();
@@ -4579,7 +4578,6 @@ namespace CSharpConceptsConsoleApp
     //Task1 locks A then waits for B
     //Task2 locks B then waits for A
     #endregion
-
 
     #region  TPL with Exception Handling
     /*
