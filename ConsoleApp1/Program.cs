@@ -4606,11 +4606,11 @@ namespace CSharpConceptsConsoleApp
     ///     Allows concurrent logging from multiple threads
     ///     Ensures only one instance
     ///     Avoids race conditions during file write
-    
+
     ///This implementation:
-        //Uses Lazy Initialization to delay creation of the singleton object until needed.
-        //Is thread-safe both in initialization and during logging.
-        //Makes it easy to write to a log file from anywhere in the application via
+    //Uses Lazy Initialization to delay creation of the singleton object until needed.
+    //Is thread-safe both in initialization and during logging.
+    //Makes it easy to write to a log file from anywhere in the application via
 
     /*
         public sealed class Logger
@@ -4634,6 +4634,112 @@ namespace CSharpConceptsConsoleApp
      */
 
     #endregion
+
+    #region .NetCore - ErrorMiddleware & RequestLoggingMiddleware
+
+    /// Request Logging Middleware example 
+    /*
+      public class RequestLoggingMiddleware
+      {
+        /// Represents the next middleware component in the HTTP request pipeline.
+        private readonly RequestDelegate _next;
+
+        /// ASP.NET Core’s built-in logging interface for this specific middleware.
+        private readonly ILogger<RequestLoggingMiddleware> _logger;
+
+        /// <summary>
+        /// This constructor is called by the ASP.NET Core runtime when the middleware is registered using app.UseMiddleware<RequestLoggingMiddleware>().
+        /// </summary>
+        public RequestLoggingMiddleware(RequestDelegate next, ILogger<RequestLoggingMiddleware> logger)
+        {
+            _next = next;
+            _logger = logger;
+        }
+
+        /// <summary>
+        /// This is the middleware's entry point. ASP.NET Core invokes this method for each HTTP request.
+        /// </summary>
+        public async Task InvokeAsync(HttpContext context)
+        {
+            /// Starts a timer to measure how long it takes to process the request.
+            var stopwatch = Stopwatch.StartNew();
+
+            /// Log Incoming Request - Logs the HTTP method, URL path, and query string.
+            var request = context.Request;
+            _logger.LogInformation("Incoming Request: {Method} {Path}{QueryString}",
+                request.Method, request.Path, request.QueryString);
+
+            /// Invoke Next Middleware - Passes control to the next middleware in the pipeline.
+            await _next(context);
+
+            /// Stop Stopwatch - Stops the timer after the request finishes processing.
+            stopwatch.Stop();
+
+            /// Log Response Details - Logs the HTTP status code and total processing time in milliseconds.
+            var response = context.Response;
+            _logger.LogInformation("Response: {StatusCode} in {ElapsedMilliseconds} ms",
+                response.StatusCode, stopwatch.ElapsedMilliseconds);
+        }
+    }
+     */
+
+
+    /// Error Handling Middleware Example
+    /*
+     
+        public class ErrorHandlingMiddleware
+        {
+        /// Represents the next middleware component in the HTTP request pipeline.
+        private readonly RequestDelegate _next;
+
+        /// <summary>
+        /// This constructor is called by the ASP.NET Core runtime when the middleware is registered using app.UseMiddleware<ErrorHandlingMiddleware>().
+        /// </summary>
+        public ErrorHandlingMiddleware(RequestDelegate next)
+        {
+            _next = next;
+        }
+
+        /// <summary>
+        /// This is the middleware's entry point. ASP.NET Core invokes this method for each HTTP request.
+        /// </summary>
+        public async Task InvokeAsync(HttpContext context)
+        {
+            try
+            {
+                /// Invoke Next Middleware - Passes control to the next middleware in the pipeline.
+                await _next(context);
+            }
+            catch (Exception ex)
+            {
+                // Handle any unhandled exceptions
+                await HandleExceptionAsync(context, ex);
+            }
+        }
+
+        private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
+        {
+            var response = context.Response;
+            response.ContentType = "application/json";
+            response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+            var errorResponse = new
+            {
+                message = "An unexpected error occurred.",
+                detail = exception.Message,
+                statusCode = response.StatusCode
+            };
+
+            var errorJson = JsonConvert.SerializeObject(errorResponse);
+
+            await response.WriteAsync(errorJson); // This is also correct
+        }
+    }
+
+     */
+
+    #endregion
+
 
     #region Singleton - Examle with Create instance and County master data cache
 
